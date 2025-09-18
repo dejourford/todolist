@@ -1,0 +1,50 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    padding: 1rem;
+}
+
+/* Header */
+h1 {
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Pill Nav */
+.pill-nav {
+    display: flex;
+    gap: 0.5rem;
+    overflow: auto;
+    padding: 0.5rem 0rem;
+    scrollbar-width: none;
+}
+
+/* Pill Items */
+.pill-item {
+    border-radius: 999px;
+    padding: 8px;
+    border: 2px solid black;
+    background: none;
+    text-wrap: nowrap;
+    font-size: 1.1rem;
+}
+
+/* Tasks Section */
+.tasks-section {
+    padding: 1rem;
+    border: 3px solid black;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Media Queries */
+@media screen and (min-width: 544px) {
+    /* Pill Nav */
+    .pill-nav {
+        justify-content: center;
+    }
+}
