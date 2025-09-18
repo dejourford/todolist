@@ -40,7 +40,6 @@ h1 {
 /* Tasks Section */
 .tasks-section {
     padding: 1rem;
-    border: 3px solid black;
     max-width: 800px;
     margin: 0 auto;
 }
