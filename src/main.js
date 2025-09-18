@@ -14,8 +14,8 @@ function renderApp() {
     const pillNavItemsArray = ["New Task", "New Project", "Today", "This Week", "Projects", "Tasks"]
     pillNavItemsArray.forEach((name) => {
         const button = document.createElement("button")
-        button.textContent = name;
-        button.dataset.tab = name;
+        button.textContent = name
+        button.dataset.tab = name
         button.className = "pill-item"
         pillNavSection.append(button)
     })
