@@ -92,6 +92,30 @@ function handleClick(e) {
 }
 
 
+// function to create task from form data
+const tasksSection = document.querySelector(".tasks-section")
+
+function createNewTask(formData) {
+    const newTaskItem = `
+    <section class="task">
+  <div class="task-left">
+    <h3>${formData.title}</h3>
+    <p>${formData.description}</p>
+    <p>Due Date: ${formData.date}</p>
+    <p>Notes: ${formData.notes}</p>
+  </div>
+  <div class="task-right">
+    <input type="checkbox" id="checkbox">
+    <img src="https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg" alt="edit task icon" id="edit-icon">
+    <img src="https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg" alt="trashcan icon" id="trash-icon">
+  </div>
+</section>
+`
+
+console.log(newTaskItem)
+tasksSection.insertAdjacentHTML("beforeend", newTaskItem)
+}
+
 // pill nav listeners
 pillNavButtons.forEach((button) => {
     button.addEventListener("click", handleClick)
@@ -109,7 +133,8 @@ form.addEventListener("submit", (e) => {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData)
     form.reset()
-
+    closeNewTaskModal()
     console.log('form data:', data)
+    createNewTask(data)
 })
 

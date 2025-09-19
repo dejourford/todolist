@@ -31,6 +31,7 @@ h1 {
     background: none;
     text-wrap: nowrap;
     font-size: 1.1rem;
+    cursor: pointer;
 }
 
 .pill-item.active {
@@ -95,6 +96,32 @@ h1 {
     padding: 0.5rem 1rem;
 }
 
+/* Task Section */
+.tasks-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.task {
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid black;
+    border-radius: 0.3rem;
+    padding: 0.5rem;
+}
+
+.task-right {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.task-right #checkbox,
+.task-right #edit-icon,
+.task-right #trash-icon {
+    cursor: pointer;
+}
 
 /* Media Queries */
 @media screen and (min-width: 544px) {
