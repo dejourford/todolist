@@ -77,13 +77,16 @@ function setActiveTab(name) {
     })
 
     // remember selection
-    ls.setItem("activeTab", name)
+    // ls.setItem("activeTab", name)
 }
 
 // handle click function
 function handleClick(e) {
     const name = e.currentTarget.dataset.tab
     setActiveTab(name)
+
+    // close modal if opened
+    closeNewTaskModal()
 
     if (name === "New Task") {
         openNewTaskModal()
@@ -100,5 +103,15 @@ pillNavButtons.forEach((button) => {
 const modalCloseButton = document.querySelector("#cancelNewTask")
 modalCloseButton.addEventListener("click", closeNewTaskModal)
 
-// pick initial tab
-setActiveTab(ls.getItem("activeTab") || "Tasks")
+// confirm button listener
+form.addEventListener("submit", (e) => {
+    e.preventDefault()
+    if (!form.reportValidity()) return;
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData)
+    form.reset()
+
+    console.log('form data:', data)
+})
+
