@@ -1,6 +1,5 @@
 // Global Variables
 const ls = localStorage
-const pillNavButtons = document.querySelectorAll(".pill-item")
 
 // CREATE INPUT FORM FOR NEW TASK AND APPEND TO APP
 const addNewTaskModal = `
@@ -61,12 +60,14 @@ function openNewTaskModal() {
 
 // function to close new task modal
 function closeNewTaskModal() {
+    form.reset()
     modal.classList.remove("active")
     modal.setAttribute("aria-hidden", true)
 }
 
 
 // set active tab function when clicked
+const pillNavButtons = document.querySelectorAll(".pill-item")
 function setActiveTab(name) {   
 
     pillNavButtons.forEach((button) => {
@@ -94,6 +95,10 @@ function handleClick(e) {
 pillNavButtons.forEach((button) => {
     button.addEventListener("click", handleClick)
 })
+
+// close button listener
+const modalCloseButton = document.querySelector("#cancelNewTask")
+modalCloseButton.addEventListener("click", closeNewTaskModal)
 
 // pick initial tab
 setActiveTab(ls.getItem("activeTab") || "Tasks")
