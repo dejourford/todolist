@@ -16,7 +16,7 @@ const addNewTaskModal = `
                 <input id="taskDesc" name="description">
             </div>
             <div class="input-item" id="date">
-                <label for="Due Date">Due Date</label>
+                <label for="taskDate">Due Date</label>
                 <input id="taskDate" name="due" type="date">
             </div>
             <div class="input-item" id="priority">
@@ -55,14 +55,14 @@ const cancelBtn = document.querySelector("#cancelNewTask")
 // function to open new task modal
 function openNewTaskModal() {
     modal.classList.add("active")
-    modal.setAttribute("aria-hidden", false)
+    modal.setAttribute("aria-hidden", "false")
 }
 
 // function to close new task modal
 function closeNewTaskModal() {
     form.reset()
     modal.classList.remove("active")
-    modal.setAttribute("aria-hidden", true)
+    modal.setAttribute("aria-hidden", "true")
 }
 
 
@@ -93,27 +93,57 @@ function handleClick(e) {
 
 
 // function to create task from form data
-const tasksSection = document.querySelector(".tasks-section")
+const tasksSection = document.querySelector(".tasks-section");
 
-function createNewTask(formData) {
-    const newTaskItem = `
-    <section class="task">
-  <div class="task-left">
-    <h3>${formData.title}</h3>
-    <p>${formData.description}</p>
-    <p>Due Date: ${formData.date}</p>
-    <p>Notes: ${formData.notes}</p>
-  </div>
-  <div class="task-right">
-    <input type="checkbox" id="checkbox">
-    <img src="https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg" alt="edit task icon" id="edit-icon">
-    <img src="https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg" alt="trashcan icon" id="trash-icon">
-  </div>
-</section>
-`
+function createNewTask(data) {
+  if (!tasksSection) return;
 
-console.log(newTaskItem)
-tasksSection.insertAdjacentHTML("beforeend", newTaskItem)
+  const task = document.createElement("section");
+  task.className = "task";
+
+  const left = document.createElement("div");
+  left.className = "task-left";
+
+  const title = document.createElement("h3");
+  title.textContent = data.title || "(Untitled)";
+
+  const desc = document.createElement("p");
+  desc.textContent = data.description || "";
+
+  const due = document.createElement("p");
+  due.textContent = data.due ? `Due Date: ${data.due}` : "";
+
+  const notes = document.createElement("p");
+  notes.textContent = data.notes ? `Notes: ${data.notes}` : "";
+
+  left.append(title, desc, due, notes);
+
+  const right = document.createElement("div");
+  right.className = "task-right";
+
+  const box = document.createElement("input");
+  box.type = "checkbox";
+  // box.addEventListener("change", () => { /* toggle done */ });
+
+  const edit = document.createElement("img");
+  edit.className = "edit-btn";
+  edit.type = "button";
+  edit.ariaLabel = "Edit task";
+  edit.src = "https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg"
+   // swap for an <img> if you like
+
+  const del = document.createElement("img");
+  del.className = "delete-btn";
+  del.type = "button";
+  del.ariaLabel = "Delete task";
+  del.textContent = "Delete";
+  del.src = "https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg";
+  // del.addEventListener("click", () => task.remove());
+
+  right.append(box, edit, del);
+
+  task.append(left, right);
+  tasksSection.append(task);
 }
 
 // pill nav listeners
