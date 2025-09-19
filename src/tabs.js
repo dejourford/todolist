@@ -1,7 +1,7 @@
 // Global Variables
 const ls = localStorage
 
-// CREATE INPUT FORM FOR NEW TASK AND APPEND TO APP
+// create modal for adding new tasks 
 const addNewTaskModal = `
 <div id="addNewTaskModal" class="modal">    
     <form class="new-task-modal">
@@ -76,8 +76,6 @@ function setActiveTab(name) {
         button.setAttribute("aria-selected", isActive)
     })
 
-    // remember selection
-    // ls.setItem("activeTab", name)
 }
 
 // handle click function
