@@ -45,9 +45,24 @@ h1 {
 }
 
 /* New Task Modal */
+#addNewTaskModal {
+    max-width: 600px;
+    margin: 0 auto;
+    display: none;
+}
+
+#addNewTaskModal.active {
+    display: block;
+}
+
 .new-task-modal {
     border: 2px solid black;
     padding: 1rem;
+}
+
+.form-title {
+    text-align: center;
+    padding: 0.3rem;
 }
 
 .form-data {
