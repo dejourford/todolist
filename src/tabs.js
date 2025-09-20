@@ -98,21 +98,27 @@ const tasksSection = document.querySelector(".tasks-section");
 function createNewTask(data) {
     if (!tasksSection) return;
 
+    // task
     const task = document.createElement("section");
     task.className = "task";
 
+    // task left
     const left = document.createElement("div");
     left.className = "task-left";
 
+    // task title
     const title = document.createElement("h3");
     title.textContent = data.title || "(Untitled)";
 
+    // task description
     const desc = document.createElement("p");
     desc.textContent = data.description || "";
 
+    // task due date
     const due = document.createElement("p");
     due.textContent = data.due ? `Due Date: ${data.due}` : "";
 
+    // task priority
     const priority = document.createElement("p")
     priority.textContent = data.priority ? `Priority: ${data.priority}` : "";
     
@@ -123,27 +129,30 @@ function createNewTask(data) {
         task.style.border = "2px solid red"
     }
 
+    // task notes
     const notes = document.createElement("p");
     notes.textContent = data.notes ? `Notes: ${data.notes}` : "";
-
     left.append(title, desc, due, priority, notes);
-
+    
+    // right side of task
     const right = document.createElement("div");
     right.className = "task-right";
 
+    // checkbox
     const box = document.createElement("input");
     box.type = "checkbox";
     box.addEventListener("change", () => { 
         task.classList.toggle("checked")
      });
 
+    // edit button
     const edit = document.createElement("img");
     edit.className = "edit-btn";
     edit.type = "button";
     edit.ariaLabel = "Edit task";
     edit.src = "https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg"
 
-
+     // delete button
     const del = document.createElement("img");
     del.className = "delete-btn";
     del.type = "button";
@@ -152,8 +161,8 @@ function createNewTask(data) {
     del.src = "https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg";
     del.addEventListener("click", () => task.remove());
 
+    // appendings
     right.append(box, edit, del);
-
     task.append(left, right);
     tasksSection.append(task);
 }
