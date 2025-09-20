@@ -115,12 +115,13 @@ function createNewTask(data) {
 
     const priority = document.createElement("p")
     priority.textContent = data.priority ? `Priority: ${data.priority}` : "";
+    
+    // add border color based on priority property value
     if (priority.textContent.includes("Medium")) {
         task.style.border = "2px solid yellow"
     } else if (priority.textContent.includes("High")) {
         task.style.border = "2px solid red"
     }
-
 
     const notes = document.createElement("p");
     notes.textContent = data.notes ? `Notes: ${data.notes}` : "";
