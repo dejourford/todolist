@@ -202,13 +202,14 @@ form.addEventListener("submit", (e) => {
     const data = Object.fromEntries(formData)
     
     // input validation for project options
+    const projectErrorText = document.querySelector(".project-error-text")
     if (data.project == "select") {
-        const projectErrorText = document.querySelector(".project-error-text")
         projectErrorText.classList.add("active");
         return;
     }
 
     form.reset()
+    projectErrorText.classList.remove("active")
     closeNewTaskModal()
     console.log('form data:', data)
     createNewTask(data)
