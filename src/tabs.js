@@ -68,7 +68,7 @@ function closeNewTaskModal() {
 
 // set active tab function when clicked
 const pillNavButtons = document.querySelectorAll(".pill-item")
-function setActiveTab(name) {   
+function setActiveTab(name) {
 
     pillNavButtons.forEach((button) => {
         const isActive = button.dataset.tab === name
@@ -96,54 +96,63 @@ function handleClick(e) {
 const tasksSection = document.querySelector(".tasks-section");
 
 function createNewTask(data) {
-  if (!tasksSection) return;
+    if (!tasksSection) return;
 
-  const task = document.createElement("section");
-  task.className = "task";
+    const task = document.createElement("section");
+    task.className = "task";
 
-  const left = document.createElement("div");
-  left.className = "task-left";
+    const left = document.createElement("div");
+    left.className = "task-left";
 
-  const title = document.createElement("h3");
-  title.textContent = data.title || "(Untitled)";
+    const title = document.createElement("h3");
+    title.textContent = data.title || "(Untitled)";
 
-  const desc = document.createElement("p");
-  desc.textContent = data.description || "";
+    const desc = document.createElement("p");
+    desc.textContent = data.description || "";
 
-  const due = document.createElement("p");
-  due.textContent = data.due ? `Due Date: ${data.due}` : "";
+    const due = document.createElement("p");
+    due.textContent = data.due ? `Due Date: ${data.due}` : "";
 
-  const notes = document.createElement("p");
-  notes.textContent = data.notes ? `Notes: ${data.notes}` : "";
+    const priority = document.createElement("p")
+    priority.textContent = data.priority ? `Priority: ${data.priority}` : "";
+    if (priority.textContent.includes("Medium")) {
+        task.style.border = "2px solid yellow"
+    } else if (priority.textContent.includes("High")) {
+        task.style.border = "2px solid red"
+    }
 
-  left.append(title, desc, due, notes);
 
-  const right = document.createElement("div");
-  right.className = "task-right";
+    const notes = document.createElement("p");
+    notes.textContent = data.notes ? `Notes: ${data.notes}` : "";
 
-  const box = document.createElement("input");
-  box.type = "checkbox";
-  // box.addEventListener("change", () => { /* toggle done */ });
+    left.append(title, desc, due, priority, notes);
 
-  const edit = document.createElement("img");
-  edit.className = "edit-btn";
-  edit.type = "button";
-  edit.ariaLabel = "Edit task";
-  edit.src = "https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg"
-   // swap for an <img> if you like
+    const right = document.createElement("div");
+    right.className = "task-right";
 
-  const del = document.createElement("img");
-  del.className = "delete-btn";
-  del.type = "button";
-  del.ariaLabel = "Delete task";
-  del.textContent = "Delete";
-  del.src = "https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg";
-  // del.addEventListener("click", () => task.remove());
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    // box.addEventListener("change", () => { /* toggle done */ });
 
-  right.append(box, edit, del);
+    const edit = document.createElement("img");
+    edit.className = "edit-btn";
+    edit.type = "button";
+    edit.ariaLabel = "Edit task";
+    edit.src = "https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg"
 
-  task.append(left, right);
-  tasksSection.append(task);
+
+    const del = document.createElement("img");
+    del.className = "delete-btn";
+    del.type = "button";
+    del.ariaLabel = "Delete task";
+    del.textContent = "Delete";
+    del.src = "https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg";
+    // del.addEventListener("click", () => task.remove());
+
+    right.append(box, edit, del);
+
+    task.append(left, right);
+    tasksSection.append(task);
 }
 
 // pill nav listeners
