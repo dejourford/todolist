@@ -9,15 +9,15 @@ const addNewTaskModal = `
         <section class="form-data">
             <div class="input-item" id="title">
                 <label for="taskTitle">Title</label>
-                <input id="taskTitle" name="title">
+                <input id="taskTitle" name="title" required>
             </div>
             <div class="input-item" id="description">
                 <label for="taskDesc">Description</label>
-                <input id="taskDesc" name="description">
+                <input id="taskDesc" name="description" required>
             </div>
             <div class="input-item" id="date">
                 <label for="taskDate">Due Date</label>
-                <input id="taskDate" name="due" type="date">
+                <input id="taskDate" name="due" type="date" required>
             </div>
             <div class="input-item" id="priority">
                 <label for="taskPriority">Priority</label>
@@ -29,8 +29,9 @@ const addNewTaskModal = `
             </div>
             <div class="input-item" id="project">
                 <label for="taskProject">Project</label>
-                <select id="taskProject" name="project">
-                    <option value="inbox">Inbox</option>
+                <select id="taskProject" name="project" required>
+                <option value="inbox">Select Project</option>    
+                <option value="inbox">Inbox</option>
                 </select>
             </div>
             <div class="input-item" id="notes">
