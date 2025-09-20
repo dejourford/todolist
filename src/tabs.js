@@ -30,9 +30,11 @@ const addNewTaskModal = `
             <div class="input-item" id="project">
                 <label for="taskProject">Project</label>
                 <select id="taskProject" name="project" required>
-                <option value="inbox">Select Project</option>    
+                <option value="select">Select Project</option>    
                 <option value="inbox">Inbox</option>
                 </select>
+
+                <p class="project-error-text">Please select a project.</p>
             </div>
             <div class="input-item" id="notes">
                 <label for="taskNotes">Notes</label>
@@ -198,6 +200,14 @@ form.addEventListener("submit", (e) => {
 
     const formData = new FormData(form);
     const data = Object.fromEntries(formData)
+    
+    // input validation for project options
+    if (data.project == "select") {
+        const projectErrorText = document.querySelector(".project-error-text")
+        projectErrorText.classList.add("active");
+        return;
+    }
+
     form.reset()
     closeNewTaskModal()
     console.log('form data:', data)

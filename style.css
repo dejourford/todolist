@@ -77,6 +77,15 @@ h1 {
     gap: 0.5rem;
 }
 
+.project-error-text {
+    display: none;
+    color: red;
+}
+
+.project-error-text.active {
+    display: block;
+}
+
 #notes textarea {
     height: 100px;
     width: 100%;
