@@ -167,6 +167,20 @@ function createNewTask(data) {
     tasksSection.append(task);
 }
 
+// function to add newly created task to local storage
+function addTaskToLocalStorage(data) {
+    console.log('task added to ls')
+    // get current tasks array. if no array then return empty array
+    const tasks = JSON.parse(ls.getItem("tasks")) || []
+    console.log(tasks)
+    
+    // add newly created task to array
+    tasks.push(data)
+
+    // add updated array to ls
+    ls.setItem("tasks", JSON.stringify(tasks))
+}
+
 // pill nav listeners
 pillNavButtons.forEach((button) => {
     button.addEventListener("click", handleClick)
@@ -187,5 +201,6 @@ form.addEventListener("submit", (e) => {
     closeNewTaskModal()
     console.log('form data:', data)
     createNewTask(data)
+    addTaskToLocalStorage(data)
 })
 
