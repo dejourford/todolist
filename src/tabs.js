@@ -133,7 +133,9 @@ function createNewTask(data) {
 
     const box = document.createElement("input");
     box.type = "checkbox";
-    // box.addEventListener("change", () => { /* toggle done */ });
+    box.addEventListener("change", () => { 
+        task.classList.toggle("checked")
+     });
 
     const edit = document.createElement("img");
     edit.className = "edit-btn";
@@ -148,7 +150,7 @@ function createNewTask(data) {
     del.ariaLabel = "Delete task";
     del.textContent = "Delete";
     del.src = "https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg";
-    // del.addEventListener("click", () => task.remove());
+    del.addEventListener("click", () => task.remove());
 
     right.append(box, edit, del);
 
