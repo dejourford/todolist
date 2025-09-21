@@ -1,5 +1,7 @@
 // Global Variables
 const ls = localStorage
+const tasksSection = document.querySelector(".tasks-section");
+
 
 // create modal for adding new tasks 
 const addNewTaskModal = `
@@ -81,6 +83,22 @@ function setActiveTab(name) {
 
 }
 
+// function to display all tasks on pill nav click
+function renderAllTasks() {
+    // clear dom of previous tasks
+    tasksSection.innerHTML = ""
+
+    // get tasks from local storage, if none, then return
+    const tasksToRender = JSON.parse(localStorage.getItem("tasks"))
+    console.log(tasksToRender)
+    
+    // for each object in array, create task item and append to tasks section
+    tasksToRender.forEach((item) => {
+        createNewTask(item)
+    })
+}
+
+
 // handle click function
 function handleClick(e) {
     const name = e.currentTarget.dataset.tab
@@ -91,13 +109,13 @@ function handleClick(e) {
 
     if (name === "New Task") {
         openNewTaskModal()
+    } else if (name === "Tasks") {
+        renderAllTasks()
     }
 }
 
 
 // function to create task from form data
-const tasksSection = document.querySelector(".tasks-section");
-
 function createNewTask(data) {
     if (!tasksSection) return;
 
