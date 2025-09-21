@@ -1,7 +1,7 @@
 // Global Variables
 const ls = localStorage
 const tasksSection = document.querySelector(".tasks-section");
-
+const sequence = "tasks_id_sequence"
 
 // create modal for adding new tasks 
 const addNewTaskModal = `
@@ -71,6 +71,14 @@ function closeNewTaskModal() {
 }
 
 
+// function to add IDs to tasks
+function nextId() {
+    const current = Number(ls.getItem(sequence))
+    const next = Number.isFinite(current) ? current + 1 : 0
+    ls.setItem(sequence, String(next))
+    return next;
+}
+
 // set active tab function when clicked
 const pillNavButtons = document.querySelectorAll(".pill-item")
 function setActiveTab(name) {
@@ -91,7 +99,7 @@ function renderAllTasks() {
     // get tasks from local storage, if none, then return
     const tasksToRender = JSON.parse(localStorage.getItem("tasks"))
     console.log(tasksToRender)
-    
+
     // for each object in array, create task item and append to tasks section
     tasksToRender.forEach((item) => {
         createNewTask(item)
@@ -122,6 +130,7 @@ function createNewTask(data) {
     // task
     const task = document.createElement("section");
     task.className = "task";
+    task.dataset.id = data.id
 
     // task left
     const left = document.createElement("div");
@@ -130,6 +139,10 @@ function createNewTask(data) {
     // task title
     const title = document.createElement("h3");
     title.textContent = data.title || "(Untitled)";
+
+    // task id
+    const id = document.createElement("p")
+    id.textContent = data.id
 
     // task description
     const desc = document.createElement("p");
@@ -142,11 +155,11 @@ function createNewTask(data) {
     // task priority
     const priority = document.createElement("p")
     priority.textContent = data.priority ? `Priority: ${data.priority}` : "";
-    
+
     // add border color based on priority property value
-    if (priority.textContent.includes("Medium")) {
+    if (data.priority === "Medium") {
         task.style.border = "2px solid yellow"
-    } else if (priority.textContent.includes("High")) {
+    } else if (data.priority === "High") {
         task.style.border = "2px solid red"
     }
 
@@ -154,7 +167,7 @@ function createNewTask(data) {
     const notes = document.createElement("p");
     notes.textContent = data.notes ? `Notes: ${data.notes}` : "";
     left.append(title, desc, due, priority, notes);
-    
+
     // right side of task
     const right = document.createElement("div");
     right.className = "task-right";
@@ -162,9 +175,11 @@ function createNewTask(data) {
     // checkbox
     const box = document.createElement("input");
     box.type = "checkbox";
-    box.addEventListener("change", () => { 
+    box.checked = !!data.is_done
+    box.addEventListener("change", () => {
         task.classList.toggle("checked")
-     });
+        toggleTaskInLocalStorage(data.id, box.checked)
+    });
 
     // edit button
     const edit = document.createElement("img");
@@ -173,14 +188,17 @@ function createNewTask(data) {
     edit.ariaLabel = "Edit task";
     edit.src = "https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg"
 
-     // delete button
+    // delete button
     const del = document.createElement("img");
     del.className = "delete-btn";
     del.type = "button";
     del.ariaLabel = "Delete task";
     del.textContent = "Delete";
     del.src = "https://techalotl.github.io/todo-list/420a913445f3a27052cb.svg";
-    del.addEventListener("click", () => task.remove());
+    del.addEventListener("click", () => {
+        removeTaskFromLocalStorage(data.id)
+        task.remove()
+    });
 
     // appendings
     right.append(box, edit, del);
@@ -189,16 +207,31 @@ function createNewTask(data) {
 }
 
 // function to add newly created task to local storage
-function addTaskToLocalStorage(data) {
+function addTaskToLocalStorage(task) {
     console.log('task added to ls')
     // get current tasks array. if no array then return empty array
     const tasks = JSON.parse(ls.getItem("tasks")) || []
     console.log(tasks)
-    
+
     // add newly created task to array
-    tasks.push(data)
+    tasks.push(task)
 
     // add updated array to ls
+    ls.setItem("tasks", JSON.stringify(tasks))
+}
+
+// function to toggle task in local storage
+function toggleTaskInLocalStorage(id, isDone) {
+    const tasks = JSON.parse(ls.getItem("tasks") || "[]")
+    const i = tasks.findIndex(t => Number(t.id) === Number(id))
+    if (i === -1) return
+    tasks[i].is_done = !!isDone
+    ls.setItem("tasks", JSON.stringify(tasks))
+}
+
+// function to remove task from local storage
+function removeTaskFromLocalStorage(id) {
+    const tasks = JSON.parse(ls.getItem("tasks") || "[]").filter(t => Number(t.id) !== Number(id))
     ls.setItem("tasks", JSON.stringify(tasks))
 }
 
@@ -218,7 +251,7 @@ form.addEventListener("submit", (e) => {
 
     const formData = new FormData(form);
     const data = Object.fromEntries(formData)
-    
+
     // input validation for project options
     const projectErrorText = document.querySelector(".project-error-text")
     if (data.project == "select") {
@@ -226,11 +259,23 @@ form.addEventListener("submit", (e) => {
         return;
     }
 
+    // create task object with numeric id
+    const task = {
+        id: nextId(),
+        title: String(data.title || "").trim(),
+        description: String(data.description || ""),
+        due: data.due || "",
+        priority: data.priority || "Low",
+        project: data.project,
+        notes: String(data.notes || ""),
+        is_done: false
+    }
+
     form.reset()
     projectErrorText.classList.remove("active")
     closeNewTaskModal()
     console.log('form data:', data)
-    createNewTask(data)
-    addTaskToLocalStorage(data)
+    createNewTask(task)
+    addTaskToLocalStorage(task)
 })
 
