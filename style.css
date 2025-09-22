@@ -49,10 +49,10 @@ h1 {
 #addNewTaskModal {
     max-width: 600px;
     margin: 0 auto;
-    display: none;
+    /* display: none; */
 }
 
-#addNewTaskModal.active {
+#addNewTaskModal {
     display: block;
     position: fixed;
     left: 50%;

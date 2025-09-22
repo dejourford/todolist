@@ -1,73 +1,106 @@
 // Global Variables
 const ls = localStorage
+const formPlaceholder = document.querySelector(".form-placeholder");
 const tasksSection = document.querySelector(".tasks-section");
 const sequence = "tasks_id_sequence"
 
 // create modal for adding new tasks 
-const addNewTaskModal = `
-<div id="addNewTaskModal" class="modal">    
-    <form class="new-task-modal">
-        <h2 class="form-title">Add New Task</h2>
-        <section class="form-data">
-            <div class="input-item" id="title">
-                <label for="taskTitle">Title</label>
-                <input id="taskTitle" name="title" required>
-            </div>
-            <div class="input-item" id="description">
-                <label for="taskDesc">Description</label>
-                <input id="taskDesc" name="description" required>
-            </div>
-            <div class="input-item" id="date">
-                <label for="taskDate">Due Date</label>
-                <input id="taskDate" name="due" type="date" required>
-            </div>
-            <div class="input-item" id="priority">
-                <label for="taskPriority">Priority</label>
-                <select id="taskPriority" name="priority">
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
-            </div>
-            <div class="input-item" id="project">
-                <label for="taskProject">Project</label>
-                <select id="taskProject" name="project" required>
-                <option value="select">Select Project</option>    
-                <option value="inbox">Inbox</option>
-                </select>
+function createForm(task = {}) {
+console.log(task)
+    formPlaceholder.innerHTML = `
+    <div id="addNewTaskModal" class="modal">    
+        <form class="new-task-modal">
+            <h2 class="form-title">${task.title ? "Edit Task" : "Add New Task"}</h2>
+            <section class="form-data">
+                <div class="input-item" id="title">
+                    <label for="taskTitle">Title</label>
+                    <input id="taskTitle" name="title" value="${task.title ?? ""}" required>
+                </div>
+                <div class="input-item" id="description">
+                    <label for="taskDesc">Description</label>
+                    <input id="taskDesc" name="description" value="${task.description ?? ""}" required>
+                </div>
+                <div class="input-item" id="date">
+                    <label for="taskDate">Due Date</label>
+                    <input id="taskDate" name="due" type="date" value="${task.due ?? ""}" required>
+                </div>
+                <div class="input-item" id="priority">
+                    <label for="taskPriority">Priority</label>
+                    <select id="taskPriority" name="priority">
+                        <option ${task.priority === "Low" ? "selected" : ""} value="Low">Low</option>
+                        <option ${task.priority === "Medium" ? "selected" : ""} value="Medium">Medium</option>
+                        <option ${task.priority === "High" ? "selected" : ""} value="High">High</option>
+                    </select>
+                </div>
+                <div class="input-item" id="project">
+                    <label for="taskProject">Project</label>
+                    <select id="taskProject" name="project" required>
+                    <option value="select">Select Project</option>    
+                    <option value="inbox">Inbox</option>
+                    </select>
 
-                <p class="project-error-text">Please select a project.</p>
+                    <p class="project-error-text">Please select a project.</p>
+                </div>
+                <div class="input-item" id="notes">
+                    <label for="taskNotes">Notes</label>
+                    <textarea id="taskNotes" name="notes">${task.notes ?? ""}</textarea>
+                </div>
+            </section>
+            <div class="form-buttons">
+                <button type="button" id="cancelNewTask">Cancel</button>
+                <button type="submit">Confirm</button>
             </div>
-            <div class="input-item" id="notes">
-                <label for="taskNotes">Notes</label>
-                <textarea id="taskNotes" name="notes"></textarea>
-            </div>
-        </section>
-        <div class="form-buttons">
-            <button type="button" id="cancelNewTask">Cancel</button>
-            <button type="submit">Confirm</button>
-        </div>
-    </form>
-</div>    
-`
+        </form>
+    </div>    
+    `
+    
+    // cancel button listener
+    const cancelBtn = document.querySelector("#cancelNewTask")
+    cancelBtn.addEventListener("click", () => {
+        formPlaceholder.innerHTML = ""
+    })
+    
+    // submit form
+    const form = document.querySelector("form")
+    form.addEventListener("submit", (e) => {
+        e.preventDefault()
+        if (!form.reportValidity()) return;
 
-// append form to app
-app.insertAdjacentHTML("beforeend", addNewTaskModal)
-const modal = document.querySelector("#addNewTaskModal")
-const form = modal.querySelector("form")
-const cancelBtn = document.querySelector("#cancelNewTask")
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData)
 
-// function to open new task modal
-function openNewTaskModal() {
-    modal.classList.add("active")
-    modal.setAttribute("aria-hidden", "false")
-}
+        // input validation for project options
+        const projectErrorText = document.querySelector(".project-error-text")
+        if (data.project == "select") {
+            projectErrorText.classList.add("active");
+            return;
+        }
 
-// function to close new task modal
-function closeNewTaskModal() {
-    form.reset()
-    modal.classList.remove("active")
-    modal.setAttribute("aria-hidden", "true")
+        // create task object with numeric id
+        const task = {
+            id: nextId(),
+            title: String(data.title || "").trim(),
+            description: String(data.description || ""),
+            due: data.due || "",
+            priority: data.priority || "Low",
+            project: data.project,
+            notes: String(data.notes || ""),
+            is_done: false
+        }
+
+
+        projectErrorText.classList.remove("active")
+
+        formPlaceholder.innerHTML = "";
+
+        console.log('form data:', data)
+        
+        // check if task already exists, if does, then edit task
+        // if not then create new task
+        createNewTask(task)
+        addTaskToLocalStorage(task)
+    })
+
 }
 
 
@@ -112,11 +145,8 @@ function handleClick(e) {
     const name = e.currentTarget.dataset.tab
     setActiveTab(name)
 
-    // close modal if opened
-    closeNewTaskModal()
-
     if (name === "New Task") {
-        openNewTaskModal()
+        createForm()
     } else if (name === "Tasks") {
         renderAllTasks()
     }
@@ -187,6 +217,10 @@ function createNewTask(data) {
     edit.type = "button";
     edit.ariaLabel = "Edit task";
     edit.src = "https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg"
+    edit.addEventListener("click", () => {
+        console.log('this task has been edited')
+        createForm(data)
+    })
 
     // delete button
     const del = document.createElement("img");
@@ -204,6 +238,15 @@ function createNewTask(data) {
     right.append(box, edit, del);
     task.append(left, right);
     tasksSection.append(task);
+}
+
+// function to edit existing tasks
+function editTask(taskData) {
+    console.log(taskData)
+    openNewTaskModal()
+
+    console.log(form)
+
 }
 
 // function to add newly created task to local storage
@@ -240,42 +283,6 @@ pillNavButtons.forEach((button) => {
     button.addEventListener("click", handleClick)
 })
 
-// close button listener
-const modalCloseButton = document.querySelector("#cancelNewTask")
-modalCloseButton.addEventListener("click", closeNewTaskModal)
 
-// confirm button listener
-form.addEventListener("submit", (e) => {
-    e.preventDefault()
-    if (!form.reportValidity()) return;
 
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData)
-
-    // input validation for project options
-    const projectErrorText = document.querySelector(".project-error-text")
-    if (data.project == "select") {
-        projectErrorText.classList.add("active");
-        return;
-    }
-
-    // create task object with numeric id
-    const task = {
-        id: nextId(),
-        title: String(data.title || "").trim(),
-        description: String(data.description || ""),
-        due: data.due || "",
-        priority: data.priority || "Low",
-        project: data.project,
-        notes: String(data.notes || ""),
-        is_done: false
-    }
-
-    form.reset()
-    projectErrorText.classList.remove("active")
-    closeNewTaskModal()
-    console.log('form data:', data)
-    createNewTask(task)
-    addTaskToLocalStorage(task)
-})
 
