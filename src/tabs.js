@@ -6,11 +6,13 @@ const sequence = "tasks_id_sequence"
 
 // create modal for adding new tasks 
 function createForm(task = {}) {
-console.log(task)
+    console.log(task)
+
     formPlaceholder.innerHTML = `
     <div id="addNewTaskModal" class="modal">    
         <form class="new-task-modal">
             <h2 class="form-title">${task.title ? "Edit Task" : "Add New Task"}</h2>
+            <input type="hidden" name="id" value="${task.id ?? ""}">
             <section class="form-data">
                 <div class="input-item" id="title">
                     <label for="taskTitle">Title</label>
@@ -53,13 +55,13 @@ console.log(task)
         </form>
     </div>    
     `
-    
+
     // cancel button listener
     const cancelBtn = document.querySelector("#cancelNewTask")
     cancelBtn.addEventListener("click", () => {
         formPlaceholder.innerHTML = ""
     })
-    
+
     // submit form
     const form = document.querySelector("form")
     form.addEventListener("submit", (e) => {
@@ -68,6 +70,20 @@ console.log(task)
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData)
+        const isEdit = Boolean(data.id && String(data.id).trim() !== "")
+
+        // create task object with numeric id
+        const task = {
+            id: isEdit ? Number(data.id) : nextId(),
+            title: String(data.title || "").trim(),
+            description: String(data.description || ""),
+            due: data.due || "",
+            priority: data.priority || "Low",
+            project: data.project,
+            notes: String(data.notes || ""),
+            is_done: isEdit ? undefined : false
+        }
+
 
         // input validation for project options
         const projectErrorText = document.querySelector(".project-error-text")
@@ -76,29 +92,39 @@ console.log(task)
             return;
         }
 
-        // create task object with numeric id
-        const task = {
-            id: nextId(),
-            title: String(data.title || "").trim(),
-            description: String(data.description || ""),
-            due: data.due || "",
-            priority: data.priority || "Low",
-            project: data.project,
-            notes: String(data.notes || ""),
-            is_done: false
-        }
-
 
         projectErrorText.classList.remove("active")
 
+
+        const tasks = JSON.parse(ls.getItem("tasks") || "[]");
+
+        if (isEdit) {
+            const i = tasks.findIndex(t => Number(t.id) === Number(task.id));
+            if (i !== -1) {
+                // preserve is_done if not set on form
+                if (task.is_done === undefined) task.is_done = !!tasks[i].is_done;
+                tasks[i] = task;
+                ls.setItem("tasks", JSON.stringify(tasks));
+            }
+        } else {
+            tasks.push(task);
+            ls.setItem("tasks", JSON.stringify(tasks));
+        }
+
+
+        // remove modal from DOM
         formPlaceholder.innerHTML = "";
 
         console.log('form data:', data)
-        
-        // check if task already exists, if does, then edit task
-        // if not then create new task
+
+        // CHANGED: update the DOM: replace existing task node if editing, else create new
+        if (isEdit) {
+            const node = tasksSection.querySelector(`[data-id="${task.id}"]`);
+            if (node) node.remove();
+        }
+
         createNewTask(task)
-        addTaskToLocalStorage(task)
+        // addTaskToLocalStorage(task)
     })
 
 }
@@ -130,10 +156,11 @@ function renderAllTasks() {
     tasksSection.innerHTML = ""
 
     // get tasks from local storage, if none, then return
-    const tasksToRender = JSON.parse(localStorage.getItem("tasks"))
+    const tasksToRender = JSON.parse(localStorage.getItem("tasks") || "[]")
     console.log(tasksToRender)
 
     // for each object in array, create task item and append to tasks section
+    if (!Array.isArray(tasksToRender) || tasksToRender.length === 0) return
     tasksToRender.forEach((item) => {
         createNewTask(item)
     })
