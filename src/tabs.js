@@ -5,33 +5,36 @@ const tasksSection = document.querySelector(".tasks-section");
 const sequence = "tasks_id_sequence"
 
 // create modal for adding new tasks 
-function createForm(task = {}) {
-    console.log(task)
+function createForm(kind, entity = {}) {
+    console.log(kind)
+    const isTask = kind === "task"
+    const projName = entity.name ?? ""
 
     formPlaceholder.innerHTML = `
     <div id="addNewTaskModal" class="modal">    
-        <form class="new-task-modal">
-            <h2 class="form-title">${task.title ? "Edit Task" : "Add New Task"}</h2>
-            <input type="hidden" name="id" value="${task.id ?? ""}">
+        <form class="new-entity-modal" data-kind="${kind}">
+            <h2 class="form-title">${entity.title ? `Edit ${isTask ? "Task" : "Project"}` : `Add New ${isTask ? "Task" : "Project"}`}</h2>
+            <input type="hidden" name="id" value="${entity.id ?? ""}">
             <section class="form-data">
+            ${isTask ? `
                 <div class="input-item" id="title">
                     <label for="taskTitle">Title</label>
-                    <input id="taskTitle" name="title" value="${task.title ?? ""}" required>
+                    <input id="taskTitle" name="title" value="${entity.title ?? ""}" required>
                 </div>
                 <div class="input-item" id="description">
                     <label for="taskDesc">Description</label>
-                    <input id="taskDesc" name="description" value="${task.description ?? ""}" required>
+                    <input id="taskDesc" name="description" value="${entity.description ?? ""}" required>
                 </div>
                 <div class="input-item" id="date">
                     <label for="taskDate">Due Date</label>
-                    <input id="taskDate" name="due" type="date" value="${task.due ?? ""}" required>
+                    <input id="taskDate" name="due" type="date" value="${entity.due ?? ""}" required>
                 </div>
                 <div class="input-item" id="priority">
                     <label for="taskPriority">Priority</label>
                     <select id="taskPriority" name="priority">
-                        <option ${task.priority === "Low" ? "selected" : ""} value="Low">Low</option>
-                        <option ${task.priority === "Medium" ? "selected" : ""} value="Medium">Medium</option>
-                        <option ${task.priority === "High" ? "selected" : ""} value="High">High</option>
+                        <option ${entity.priority === "Low" ? "selected" : ""} value="Low">Low</option>
+                        <option ${entity.priority === "Medium" ? "selected" : ""} value="Medium">Medium</option>
+                        <option ${entity.priority === "High" ? "selected" : ""} value="High">High</option>
                     </select>
                 </div>
                 <div class="input-item" id="project">
@@ -45,11 +48,18 @@ function createForm(task = {}) {
                 </div>
                 <div class="input-item" id="notes">
                     <label for="taskNotes">Notes</label>
-                    <textarea id="taskNotes" name="notes">${task.notes ?? ""}</textarea>
+                    <textarea id="taskNotes" name="notes">${entity.notes ?? ""}</textarea>
                 </div>
+                ` : `
+                <!-- Project Fields -->
+                <div class="input-item" id="projectName">
+                    <label for="projectNameInput">Project Name</label>
+                    <input id="projectNameInput" name="name" value="${projName}" required>
+                </div>
+            `}
             </section>
             <div class="form-buttons">
-                <button type="button" id="cancelNewTask">Cancel</button>
+                <button type="button" id="cancelNewEntity">Cancel</button>
                 <button type="submit">Confirm</button>
             </div>
         </form>
@@ -57,13 +67,14 @@ function createForm(task = {}) {
     `
 
     // cancel button listener
-    const cancelBtn = document.querySelector("#cancelNewTask")
+    const cancelBtn = document.querySelector("#cancelNewEntity")
     cancelBtn.addEventListener("click", () => {
         formPlaceholder.innerHTML = ""
     })
 
     // submit form
-    const form = document.querySelector("form")
+    const modal = document.querySelector("#addNewTaskModal")
+    const form = modal.querySelector("form")
     form.addEventListener("submit", (e) => {
         e.preventDefault()
         if (!form.reportValidity()) return;
@@ -91,8 +102,6 @@ function createForm(task = {}) {
             projectErrorText.classList.add("active");
             return;
         }
-
-
         projectErrorText.classList.remove("active")
 
 
@@ -167,19 +176,6 @@ function renderAllTasks() {
 }
 
 
-// handle click function
-function handleClick(e) {
-    const name = e.currentTarget.dataset.tab
-    setActiveTab(name)
-
-    if (name === "New Task") {
-        createForm()
-    } else if (name === "Tasks") {
-        renderAllTasks()
-    }
-}
-
-
 // function to create task from form data
 function createNewTask(data) {
     if (!tasksSection) return;
@@ -246,7 +242,7 @@ function createNewTask(data) {
     edit.src = "https://techalotl.github.io/todo-list/fa4977c9aa1ef2c7e07d.svg"
     edit.addEventListener("click", () => {
         console.log('this task has been edited')
-        createForm(data)
+        createForm("task", data)
     })
 
     // delete button
@@ -305,10 +301,32 @@ function removeTaskFromLocalStorage(id) {
     ls.setItem("tasks", JSON.stringify(tasks))
 }
 
+// function to create modal for adding new projects???
+
+
+// handle click function
+function handleClick(e) {
+    const name = e.currentTarget.dataset.tab
+    setActiveTab(name)
+    console.log(name)
+
+    if (name === "New Task") {
+        createForm("task")
+    } else if (name === "Tasks") {
+        renderAllTasks()
+    } else if (name === "New Project") {
+        createForm("project")
+    }
+}
+
 // pill nav listeners
-pillNavButtons.forEach((button) => {
-    button.addEventListener("click", handleClick)
-})
+document.addEventListener("DOMContentLoaded", () => {
+    pillNavButtons.forEach((button) => {
+        button.addEventListener("click", handleClick);
+    });
+});
+
+
 
 
 
